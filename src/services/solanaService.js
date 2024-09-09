@@ -1,3 +1,4 @@
+
 import {
     Connection,
     PublicKey,
@@ -7,13 +8,15 @@ import {
   import {
     createTransferCheckedInstruction,
     getAssociatedTokenAddress,
+    getOrCreateAssociatedTokenAccount,
     getAccount,
   } from '@solana/spl-token';
   import { SOLANA_NETWORK, USDC_MINT_ADDRESS } from '../config.js';
   
-  const connection = new Connection(clusterApiUrl(SOLANA_NETWORK), 'confirmed');
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
   
   export async function checkUsdcBalance(publicKey) {
+    console.log('checking balance');
     const senderPubkey = new PublicKey(publicKey);
     const senderTokenAccount = await getAssociatedTokenAddress(USDC_MINT_ADDRESS, senderPubkey);
     const accountInfo = await getAccount(connection, senderTokenAccount);
@@ -26,6 +29,8 @@ import {
   
     const senderTokenAccount = await getAssociatedTokenAddress(USDC_MINT_ADDRESS, senderPubkey);
     const recipientTokenAccount = await getAssociatedTokenAddress(USDC_MINT_ADDRESS, recipientPubkey);
+
+    console.log('prepareing transfer');
   
     const transferAmount = amount * Math.pow(10, 6); // Convert to USDC's smallest unit
     const transferInstruction = createTransferCheckedInstruction(
@@ -36,6 +41,8 @@ import {
       transferAmount,
       6,
     );
+
+    console.log('transfer instruction', transferInstruction);
   
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
     const transaction = new Transaction({
@@ -43,6 +50,8 @@ import {
       blockhash,
       lastValidBlockHeight,
     }).add(transferInstruction);
+
+    console.log('transaction', transaction);
   
     return transaction.serialize({ requireAllSignatures: false }).toString('base64');
   }

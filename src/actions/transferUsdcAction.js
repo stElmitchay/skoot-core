@@ -21,12 +21,13 @@ export const transferUsdcAction = {
     required: ['senderPublicKey', 'recipientAddress'],
   },
   handle: async ({ account:senderPublicKey }) => {
+    console.log('senderPublicKey', senderPublicKey);
     if (!senderPublicKey) {
       throw new Error('Missing required parameters');
     }
 
     const balance = await checkUsdcBalance(senderPublicKey);
-    
+    console.log('balance', balance);
     if (balance <= 2) {
       throw new Error('Not enough USDC for transaction');
     }
