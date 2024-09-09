@@ -1,17 +1,23 @@
 import express from 'express';
-import helmet from 'helmet';
-import transferController from './controllers/transferController.js';
-import errorHandler from './utils/errorHandler.js';
+import { transferUsdcAction } from './actions/transferUsdcAction.js';
 import { PORT } from './config.js';
 
 const app = express();
-
-app.use(helmet());
 app.use(express.json());
 
-app.use('/api/actions', transferController);
+app.get('/api/actions/transfer-usdc', (req, res) => {
+  const metadata = transferUsdcAction.getMetadata();
+  res.json(metadata);
+});
 
-app.use(errorHandler);
+app.post('/api/actions/transfer-usdc', async (req, res) => {
+  try {
+    const result = await transferUsdcAction.handle(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid Address' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
