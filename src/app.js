@@ -1,9 +1,24 @@
+//@ts-check
+
 import express from 'express';
 import { transferUsdcAction } from './actions/transferUsdcAction.js';
 import { PORT } from './config.js';
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
+app.use("*", cors());
+
+app.get('/actions.json', (req, res) => {
+  res.json({
+    "rules": [
+      {
+        "pathPattern": "/**",
+        "apiPath": "/**"
+      }
+    ]
+  });
+});
 
 app.get('/api/actions/transfer-usdc', (req, res) => {
   const metadata = transferUsdcAction.getMetadata();
@@ -11,6 +26,7 @@ app.get('/api/actions/transfer-usdc', (req, res) => {
 });
 
 app.post('/api/actions/transfer-usdc', async (req, res) => {
+  console.log(req.body);
   try {
     const result = await transferUsdcAction.handle(req.body);
     res.json(result);
