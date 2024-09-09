@@ -39,7 +39,7 @@ export const transferUsdcAction = {
 
     return {
       transaction,
-      message: `Transfer 1 USDC from ${senderPublicKey} to ${recipientAddress}`,
+      message: `Scoot without fear!`,
     };
   },
   getMetadata: () => ({
